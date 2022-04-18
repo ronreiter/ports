@@ -43,6 +43,7 @@ class PortsApp(rumps.App):
         super().__init__("Ports")
         self.port_to_title = {}
         self.icon = 'icons/port-white.png'
+        self.app_icons = {}
 
     @rumps.timer(1)
     def on_tick(self, sender):
@@ -50,9 +51,27 @@ class PortsApp(rumps.App):
         proc_data = get_proc_data_by_pid()
         for port, app_data in ports:
             app_name = app_data[0]['COMMAND']
-            self.port_to_title[port] = f"{port} - {app_name}"
             app_proc_data = proc_data[app_data[0]['PID']]
-            icon_f = f"icons/{app_name.lower()}.png"
+
+            app_part = [x for x in app_proc_data['COMMAND'].split("/") if x.endswith(".app")]
+            if app_part:
+                self.port_to_title[port] = f"{port} - {app_name} ({app_part[0]})"
+            else:
+                self.port_to_title[port] = f"{port} - {app_name}"
+
+            if app_name in self.app_icons:
+                # use cached
+                icon_f = self.app_icons[app_name]
+            else:
+                if ".app" in app_proc_data['COMMAND']:
+                    res_dir = app_proc_data['COMMAND'].split(".app")[0] + ".app/Contents/Resources/"
+                    icons_in_res_dir = [x for x in os.listdir(res_dir) if x.endswith(".icns")]
+                    icon_f = res_dir + icons_in_res_dir[0] if icons_in_res_dir else None
+                else:
+                    icon_f = f"icons/{app_name.lower()}.png"
+
+                self.app_icons[app_name] = icon_f
+
             if self.port_to_title[port] not in self.menu:
                 print("found app in port %s" % port)
                 menu_by_port[port] = (rumps.MenuItem(
@@ -61,11 +80,9 @@ class PortsApp(rumps.App):
                     icon=icon_f if os.path.exists(icon_f) else "icons/port-white.png"
                 ), [
                     rumps.MenuItem("PID: " + app_proc_data['PID']),
-                    # rumps.MenuItem("CPU Usage: " + app_proc_data['%CPU'] + "%"),
-                    # rumps.MenuItem("Memory Usage: " + app_proc_data['%MEM'] + "%"),
                     rumps.MenuItem("Command: " + app_proc_data['COMMAND']),
                     rumps.MenuItem("Terminate %s" % app_name, callback=functools.partial(self.terminate, port)),
-                    rumps.MenuItem("Open Browser - %s" % app_name, callback=functools.partial(self.open, port)),
+                    rumps.MenuItem("Open Browser: http://localhost:%s" % port, callback=functools.partial(self.open, port)),
                 ])
                 self.menu.update([menu_by_port[port]])
 

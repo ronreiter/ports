@@ -1,7 +1,7 @@
 from setuptools import setup
 
 APP = ['ports.py']
-DATA_FILES = []
+DATA_FILES = ['icons']
 OPTIONS = {
     'argv_emulation': True,
     'iconfile': 'icon.icns',
