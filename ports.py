@@ -42,6 +42,7 @@ class PortsApp(rumps.App):
     def __init__(self):
         super().__init__("Ports")
         self.title = "🔌"
+        self.port_to_title = {}
 
     @rumps.timer(1)
     def on_tick(self, sender):
@@ -49,37 +50,42 @@ class PortsApp(rumps.App):
         proc_data = get_proc_data_by_pid()
         for port, app_data in ports:
             app_name = app_data[0]['COMMAND']
+            self.port_to_title[port] = f"{port} - {app_name}"
             app_proc_data = proc_data[app_data[0]['PID']]
             icon_f = f"icons/{app_name.lower()}.png"
-            if port not in menu_by_port:
+            if self.port_to_title[port] not in self.menu:
+                print("found app in port %s" % port)
                 menu_by_port[port] = (rumps.MenuItem(
-                    title=f"{port} - {app_name}",
+                    title=self.port_to_title[port],
                     callback=functools.partial(self.click_app, port),
-                    icon=icon_f if os.path.exists(icon_f) else None
+                    icon=icon_f if os.path.exists(icon_f) else "icons/port.png"
                 ), [
                     rumps.MenuItem("PID: " + app_proc_data['PID']),
-                    rumps.MenuItem("CPU Usage: " + app_proc_data['%CPU'] + "%"),
-                    rumps.MenuItem("Memory Usage: " + app_proc_data['%MEM'] + "%"),
+                    # rumps.MenuItem("CPU Usage: " + app_proc_data['%CPU'] + "%"),
+                    # rumps.MenuItem("Memory Usage: " + app_proc_data['%MEM'] + "%"),
                     rumps.MenuItem("Command: " + app_proc_data['COMMAND']),
-                    rumps.MenuItem("Terminate", callback=functools.partial(self.terminate, port)),
-                    rumps.MenuItem("Open Browser", callback=functools.partial(self.open, port)),
+                    rumps.MenuItem("Terminate %s" % app_name, callback=functools.partial(self.terminate, port)),
+                    rumps.MenuItem("Open Browser - %s" % app_name, callback=functools.partial(self.open, port)),
                 ])
+                self.menu.update([menu_by_port[port]])
 
-        try:
-            self.menu = menu_by_port.values()
-        except Exception as e:
-            pass
+        for port_to_remove in set(menu_by_port.keys()) - set([x[0] for x in ports]):
+            if self.port_to_title[port_to_remove] in self.menu:
+                del self.menu[self.port_to_title[port_to_remove]]
+
 
 
     def click_app(self, port, sender):
         print("Click", port, sender)
+        webbrowser.open("http://localhost:%s" % port)
 
     def terminate(self, port, sender):
         print("Terminate", port, sender)
         apps = apps_by_port()[port]
         for app in apps:
             print("killing %s..." % app['PID'])
-            os.kill(int(app['PID']), signal.SIGSTOP)
+            os.kill(int(app['PID']), signal.SIGKILL)
+            rumps.notification("Killed Process", None, "Killed process %s" % app['PID'])
 
     def open(self, port, sender):
         print("Open", port, sender)
