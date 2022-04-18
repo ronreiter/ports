@@ -41,8 +41,8 @@ menu_by_port = {}
 class PortsApp(rumps.App):
     def __init__(self):
         super().__init__("Ports")
-        self.title = "🔌"
         self.port_to_title = {}
+        self.icon = 'icons/port-white.png'
 
     @rumps.timer(1)
     def on_tick(self, sender):
@@ -58,7 +58,7 @@ class PortsApp(rumps.App):
                 menu_by_port[port] = (rumps.MenuItem(
                     title=self.port_to_title[port],
                     callback=functools.partial(self.click_app, port),
-                    icon=icon_f if os.path.exists(icon_f) else "icons/port.png"
+                    icon=icon_f if os.path.exists(icon_f) else "icons/port-white.png"
                 ), [
                     rumps.MenuItem("PID: " + app_proc_data['PID']),
                     # rumps.MenuItem("CPU Usage: " + app_proc_data['%CPU'] + "%"),
