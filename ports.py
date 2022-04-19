@@ -1,3 +1,7 @@
+# TODOs:
+# Make the app icon right
+# make a website / README.md to download the ports app
+
 import functools
 import os
 import signal
@@ -38,14 +42,27 @@ def apps_by_port():
 
 menu_by_port = {}
 
+
 class PortsApp(rumps.App):
     def __init__(self):
-        super().__init__("Ports")
+        super().__init__("Ports", icon='icons/port-white.png')
         self.port_to_title = {}
-        self.icon = 'icons/port-white.png'
         self.app_icons = {}
+        self.first_time = True
 
-    @rumps.timer(1)
+        self.menu = [rumps.MenuItem("About Ports", callback=self.about)]
+
+    def about(self, sender):
+        result = rumps.alert("About Ports", "Ports gives you full visibility and control for which "
+                                   "ports are being opened and closed by which applications.\n"
+                                   "Ports was developed by Ron Reiter.\n"
+                                   "To contribute, please go to:\n"
+                                   "https://github.com/ronreiter/ports", ok="Go to GitHub", cancel="Done")
+
+        if result:
+            webbrowser.open("https://github.com/ronreiter/ports")
+
+    @rumps.timer(5)
     def on_tick(self, sender):
         ports = sorted(apps_by_port().items())
         proc_data = get_proc_data_by_pid()
@@ -73,7 +90,8 @@ class PortsApp(rumps.App):
                 self.app_icons[app_name] = icon_f
 
             if self.port_to_title[port] not in self.menu:
-                print("found app in port %s" % port)
+                if not self.first_time:
+                    rumps.notification("Open Port Discovered", None, "Port %s was just opened by application %s" % (port, app_name))
                 menu_by_port[port] = (rumps.MenuItem(
                     title=self.port_to_title[port],
                     callback=functools.partial(self.click_app, port),
@@ -88,9 +106,11 @@ class PortsApp(rumps.App):
 
         for port_to_remove in set(menu_by_port.keys()) - set([x[0] for x in ports]):
             if self.port_to_title[port_to_remove] in self.menu:
+                rumps.notification("Closed Port Discovered", None,
+                   "Port %s was just closed" % port_to_remove)
                 del self.menu[self.port_to_title[port_to_remove]]
 
-
+        self.first_time = False
 
     def click_app(self, port, sender):
         print("Click", port, sender)
@@ -107,6 +127,7 @@ class PortsApp(rumps.App):
     def open(self, port, sender):
         print("Open", port, sender)
         webbrowser.open("http://localhost:%s" % port)
+
 
 if __name__ == '__main__':
     print('starting...')
