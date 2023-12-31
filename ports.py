@@ -33,7 +33,11 @@ def get_ports() -> Sequence[dict[str]]:
 def apps_by_port():
     retval = {}
     for app in get_ports():
-        port = int(app['NAME'].split(":")[1])
+        try:
+            port = int(app['NAME'].replace('[::1]', '127.0.0.1').split(":")[1])
+        except Exception as e:
+            print(e)
+            continue
         if port not in retval:
             retval[port] = []
         retval[port].append(app)
@@ -45,7 +49,7 @@ menu_by_port = {}
 
 class PortsApp(rumps.App):
     def __init__(self):
-        super().__init__("Ports", icon='icons/port-white.png')
+        super().__init__("Ports", icon='icons/port.png')
         self.port_to_title = {}
         self.app_icons = {}
         self.first_time = True
