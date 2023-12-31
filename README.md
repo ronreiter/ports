@@ -1,6 +1,6 @@
 # Ports - Local Port Management Tool
 
-![Ports Screenshot](ports.jpg)
+![Ports Screenshot](ports.png)
 
 ## Introduction
 **Ports** is a streamlined Mac application designed to enhance your network management experience. 
