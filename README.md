@@ -1,4 +1,4 @@
-# Ports - Local Port Management Tool
+# Ports - Local Mac Port Management Tool
 
 ![Ports Screenshot](ports.png)
 
