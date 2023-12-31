@@ -39,6 +39,8 @@ simply drag the application to your Applications folder and run it.
 Ports is designed to be intuitive and easy to use. The application  displays a list of all open local ports, 
 along with the applications using them. 
 
+To see all open ports and the processes opening them, simply click on the Ports app from the menu bar.
+
 To terminate a process, simply select it from the list and click the "Terminate" button. 
 
 To view the exact command line used by a process, hover on top of each process and it will appear.
