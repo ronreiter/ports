@@ -5,7 +5,7 @@
 ## Introduction
 **Ports** is a streamlined Mac application designed to enhance your network management experience. 
 Written in Python, this open-source tool provides a real-time overview of all local ports, 
-allowing you to quickly identify and manage the applications using them. 
+allowing you to quickly identify and manage the applications using them, right from your Mac's menu bar.
 
 Whether you're a developer, network administrator, or just curious about your system's network connections,
 Ports offers a user-friendly interface to monitor and control your local ports efficiently.
