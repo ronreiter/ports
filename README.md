@@ -18,6 +18,12 @@ Ports offers a user-friendly interface to monitor and control your local ports e
 
 ## Getting Started
 
+### Download
+
+Download the latest release here:
+
+https://raw.githubusercontent.com/ronreiter/ports/master/dist/Ports.zip
+
 ### Installation
 To get started with Ports, simply clone the repository and run the application on your Mac:
 
