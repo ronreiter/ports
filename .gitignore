@@ -1,5 +1,4 @@
 venv
 .idea
 build
-dist
 .DS_Store
