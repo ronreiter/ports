@@ -44,3 +44,8 @@ To see all open ports and the processes opening them, simply click on the Ports 
 To terminate a process, simply select it from the list and click the "Terminate" button. 
 
 To view the exact command line used by a process, hover on top of each process and it will appear.
+
+
+### Contribute
+
+I haven't had the chance to develop the functionality to start the program at start-up, so please feel free to help out.
